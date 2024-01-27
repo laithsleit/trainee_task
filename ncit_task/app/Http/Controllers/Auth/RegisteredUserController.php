@@ -46,9 +46,6 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        event(new Registered($user));
-
-        // Auth::login($user);
         return redirect()->route('login')->with('status', 'Registration successful. Please log in.');
     }
 
@@ -71,7 +68,7 @@ class RegisteredUserController extends Controller
             'email.unique' => 'This email has already been taken.',
             'password.required' => 'Password is required.',
             'password.min' => 'Password must be at least 8 characters.',
-            'password.regex' => 'Password does not meet the complexity requirements.',
+            'password.regex' => 'Your Password must be at least 8 characters long, include both letters and numbers, and contain special characters (!, $, #, %).',
             'password.confirmed' => 'Passwords do not match.',
         ]);
     }

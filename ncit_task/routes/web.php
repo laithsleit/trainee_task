@@ -3,6 +3,7 @@
 use App\Http\Middleware\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProfileController;
 
 
@@ -29,15 +30,20 @@ Route::get('/', function () {
 
 
 //admin routes
+
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+    Route::post('/students', [AdminController::class, 'storeStd'])->name('students.store');
+    Route::get('/users/{user}/edit', [AdminController::class, 'EditStd'])->name('users.edit');
+    Route::POST('/students/update', [AdminController::class, 'updateStd'])->name('students.update');
+    Route::delete('/students/{student}', [AdminController::class, 'deleteStd'])->name('students.delete');
+
 });
 
 
 require __DIR__.'/auth.php';
 
+///////////////////////////////////////////////////////////////////////////////////////////
 
 // user routes
 Route::middleware(['auth', 'roles:user'])->group(function () {
