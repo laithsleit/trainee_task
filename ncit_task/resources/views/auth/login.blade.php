@@ -1,6 +1,18 @@
 <x-guest-layout>
     <!-- Session Status -->
+    @if ($errors->any())
+    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
+        <p class="font-bold"> errors:</p>
+        <ul class="list-disc pl-6 mb-0">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
     <x-auth-session-status class="mb-4" :status="session('status')" />
+
 
     <form method="POST" action="{{ route('login') }}">
         @csrf

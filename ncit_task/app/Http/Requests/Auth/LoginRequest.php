@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
+
 class LoginRequest extends FormRequest
 {
     /**
@@ -37,19 +38,33 @@ class LoginRequest extends FormRequest
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function authenticate(): void
+    public function authenticate()
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        if (! Auth::attempt($this->only('email', 'password'), $this->filled('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
+                'email' => __('auth.failed'),
             ]);
         }
 
         RateLimiter::clear($this->throttleKey());
+
+        // Add this check
+        $this->postAuthenticate();
+    }
+
+    protected function postAuthenticate()
+    {
+        $user = Auth::user();
+        if ($user->status != 'active') {
+            Auth::logout();
+            throw ValidationException::withMessages([
+                'status' => 'This account is inactive, please wait for the admin to activate your account.'
+            ]);
+        }
     }
 
     /**

@@ -21,6 +21,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'status',
+        'Role',
     ];
 
     /**
@@ -42,4 +44,10 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    public function subjects()
+    {
+        return $this->belongsToMany(Subject::class, 'subject_user')
+                    ->withPivot('obtained_mark');
+    }
+
 }
