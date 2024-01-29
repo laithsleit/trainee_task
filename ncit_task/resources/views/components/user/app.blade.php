@@ -11,26 +11,27 @@
 <body class="bg-gray-100">
     <!-- Navigation Bar -->
     <nav class="bg-white shadow-lg">
-        <div class="max-w-6xl mx-auto px-4">
+        <div class="max-w-6xl px-4 mx-auto">
             <div class="flex justify-between">
                 <div class="flex space-x-7">
                     <div>
                         <!-- Website Logo -->
-                        <a href="#" class="flex items-center py-4 px-2">
-                            <span class="font-semibold text-gray-500 text-lg">e-learning</span>
+                        <a href="#" class="flex items-center px-2 py-4">
+                            <span class="text-lg font-semibold text-gray-500">e-learning</span>
                         </a>
                     </div>
                 </div>
                 <!-- Primary Navbar items -->
-                <div class="hidden md:flex items-center space-x-3 ">
+                <div class="items-center hidden space-x-3 md:flex ">
 
-                    <span class="py-4 px-2 text-gray-500 font-semibold">Welcome, {{ Auth::user()->name }}
+
 
                     </span>
-                    <!-- Logout Button -->
-                    <form method="POST" action="{{ route('logout') }}" class="py-4 px-2">
+                    <!-- Logout Button --><a href="/profile" class="block px-4 py-2 font-semibold text-gray-700 hover:bg-indigo-600 hover:text-white">{{ Auth::user()->name }} Profile</a>
+
+                    <form method="POST" action="{{ route('logout') }}" class="px-2 py-4">
                         @csrf
-                        <button type="submit" class="text-red-500 font-semibold">Logout</button>
+                        <button type="submit" class="px-4 py-2 font-semibold text-red-500 hover:bg-red-600 hover:text-white">Logout</button>
                     </form>
                 </div>
             </div>
@@ -38,6 +39,6 @@
     </nav>
 
     <!-- Page Content -->
-    <div class="container mx-auto px-4 py-8">
+    <div class="container px-4 py-8 mx-auto">
 
     </div>
