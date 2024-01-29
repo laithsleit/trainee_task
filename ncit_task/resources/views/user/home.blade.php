@@ -11,14 +11,14 @@
                         <span class="text-xl font-semibold text-gray-700">Student Dashboard</span>
                     </div>
                     <div class="flex items-center">
-                        <span class="text-gray-800 text-sm">{{ Auth::user()->email }}</span>
+                        <span class="text-gray-800 text-sm font-semibold">{{ Auth::user()->email }}</span>
                     </div>
                 </div>
             </div>
         </nav>
 
         <div class="font-sans bg-gray-100 p-6">
-            
+
             <div class="min-w-full bg-white shadow overflow-hidden rounded-lg">
                 <table class="min-w-full leading-normal">
                     <thead>
