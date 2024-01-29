@@ -27,7 +27,7 @@ class AdminController extends Controller
     $validator = $this->validator($request->all());
 
     if ($validator->fails()) {
-        // Redirect back with errors if validation fails
+
         return redirect()->back()->withErrors($validator)->withInput();
     }
 
@@ -35,13 +35,11 @@ class AdminController extends Controller
     User::create([
         'name' => $request->name,
         'email' => $request->email,
-        'password' => Hash::make($request->password), // Hash the password
+        'password' => Hash::make($request->password),
     ]);
 
-    // Success message
     $successMessage = 'Student created successfully!';
 
-    // Redirect to a specific route with a success message
     return redirect()->route('dashboard')->with('success', $successMessage);
 }
 
@@ -64,7 +62,7 @@ public function updateStd(Request $request)
     $student = User::findOrFail($request->input('user_id'));
     $student->update($validatedData);
 
-    // Redirect with a success message
+
     return redirect()->back()->with('success', 'Student updated successfully!');
 }
 

@@ -10,7 +10,7 @@ class CreateSubjectUsersTable  extends Migration
         Schema::create('subject_user', function (Blueprint $table) {
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('subject_id')->constrained()->onDelete('cascade');
-            $table->unsignedInteger('obtained_mark');
+            $table->unsignedInteger('obtained_mark')->nullable();
             $table->primary(['user_id', 'subject_id']);
             $table->timestamps();
         });

@@ -5,7 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProfileController;
-
+use App\Http\Controllers\SubjectController;
+use App\Models\Subject;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,12 +32,22 @@ Route::get('/', function () {
 
 //admin routes
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'roles:admin'])->group(function () {
+    //AdminController
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     Route::post('/students', [AdminController::class, 'storeStd'])->name('students.store');
     Route::get('/users/{user}/edit', [AdminController::class, 'EditStd'])->name('users.edit');
     Route::POST('/students/update', [AdminController::class, 'updateStd'])->name('students.update');
     Route::delete('/students/{student}', [AdminController::class, 'deleteStd'])->name('students.delete');
+
+    //Subjectcontroller
+    Route::get('/subjects', [SubjectController::class, 'index'])->name('subjects.index');
+
+    Route::post('/subjects/store', [SubjectController::class, 'store'])->name('subjects.store');
+    Route::get('/subjects/{subject}/students', [SubjectController::class, 'viewStudents'])->name('subjects.viewStudents');
+    Route::delete('/subjects/{subject}', [SubjectController::class, 'deleteSubject'])->name('subjects.delete');
+    Route::post('/subjects/AddStudents', [SubjectController::class, 'addStdToSub'])->name('subjects.addStdToSub');
+    Route::post('/update-mark/{studentId}', [SubjectController::class,'updateMark'])->name('update.mark');
 
 });
 
