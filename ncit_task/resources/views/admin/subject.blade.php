@@ -6,30 +6,27 @@
 
 
     <!-- Check for validation errors and display them -->
-    @if ($errors->any())
-        <div id="errorMessage" class="relative px-4 py-3 text-red-700 bg-red-100 border border-red-400 rounded" role="alert">
+
+    <div id="errorMessage" class="relative hidden px-4 py-3 overflow-x-hidden overflow-y-auto text-red-700 bg-red-100 border border-red-400 rounded shadow-md" role="alert">
             <strong class="font-bold">Whoops! Something went wrong.</strong>
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
+            <ul id="errorList">
+
             </ul>
         </div>
-    @endif
 
     <!-- Check for a success message -->
-    @if (session('success'))
-        <div id="successMessage" class="relative px-4 py-3 text-green-700 bg-green-100 border border-green-400 rounded" role="alert">
+
+    <div id="successMessage" class="relative hidden px-4 py-3 overflow-y-auto text-green-700 bg-green-100 border border-green-400 rounded shadow-md overflo w-x-hidden" role="alert">
             <strong class="font-bold">Success!</strong>
-            <span class="block sm:inline">{{ session('success') }}</span>
+            <span id="successContent"></span>
         </div>
 
 
-    @endif
+
 
     <div class="flex flex-col mt-8 ">
 <div class="flex justify-evenly">
-    <button id="addStudentBtn" onclick="toggleModal('addStd2SubModal', this)" class="w-1/3 px-10 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700">
+    <button id="addStd2SubBtn" onclick="toggleModal('addStd2SubModal', this)" class="w-1/3 px-10 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700">
         Add Student to subject
     </button>
 
@@ -44,25 +41,12 @@
                 <th class="px-6 py-3 text-xs leading-4 text-center text-gray-800 uppercase border-b border-gray-200 bg-gray-50">Actions</th>
             </tr>
         </thead>
-        <tbody class="block md:table-row-group">
-            @foreach ($subjects as $subject)
-            <tr class="block border border-black md:border-none md:table-row">
-                <td class="block p-2 text-center text-black bg-gray-200 border border-black md:table-cell">{{ $subject->name }}</td> <!-- Centering text -->
-                <td class="block p-2 text-center text-black bg-gray-200 border border-black md:table-cell"> <!-- Centering buttons -->
-                    <button onclick="toggleModal('viewStudentsModal', this)" data-id="{{ $subject->id }}" class="px-4 py-2 font-bold text-white bg-green-500 rounded hover:bg-green-700">View</button>
-                    <form action="{{ route('subjects.delete', $subject->id) }}" method="POST" class="inline-block">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="px-4 py-2 ml-2 font-bold text-white bg-red-500 rounded hover:bg-red-700">Delete</button>
-                    </form>
+        <tbody id="subjectsTableBody" class="block md:table-row-group">
 
-                </td>
-            </tr>
-            @endforeach
         </tbody>
     </table>
-    <div class="mt-4 ">
-        {{ $subjects->links('pagination::bootstrap-4') }}
+    <div id="paginationContainer" class="mt-4">
+        {{ $subjects->links() }}
     </div>
 </div>
 
@@ -94,12 +78,12 @@
 
 <div class="fixed inset-0 z-40 hidden bg-black opacity-25" id="viewStudentsModal-backdrop"></div>
 
-<!-- Add Students Popup Form -->
+<!-- Add Subjects Popup Form -->
 <div class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-x-hidden overflow-y-auto outline-none focus:outline-none" id="addSubjectModal">
     <div class="relative p-6 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-md w-96 top-1/2 left-1/2">
 
         <h2 class="mb-4 text-2xl font-semibold">Add Subject</h2>
-        <form action="{{ route('subjects.store') }}" method="POST">
+        <form id="addSubjectForm">
             @csrf
             <div class="mb-4">
                 <label for="subjectName" class="block text-sm font-medium text-gray-700">Subject Name</label>
@@ -126,12 +110,11 @@
 <div class="fixed inset-0 z-40 hidden bg-black opacity-25" id="addSubjectModal-backdrop"></div>
 
 
-<!-- Add Students Popup Form -->
+<!-- Add Students to subject Popup Form -->
 <div class="fixed inset-0 z-50 flex items-center justify-center hidden overflow-x-hidden overflow-y-auto outline-none focus:outline-none" id="addStd2SubModal">
     <div class="relative p-6 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-md w-96 top-1/2 left-1/2">
-
         <h2 class="mb-4 text-2xl font-semibold">Add Student to Subject</h2>
-        <form action="{{ route('subjects.addStdToSub') }}" method="POST">
+        <form action="{{ route('subjects.addStdToSub') }}" method="POST" id="addStudentForm">
             @csrf
             @method('POST')
             <div class="mb-4">
@@ -145,46 +128,31 @@
             <div class="mb-4">
                 <label for="studentId" class="block text-sm font-medium text-gray-700">Student</label>
                 <select name="student_id" id="student_id" class="w-full px-4 py-2 mt-1 border rounded-md focus:ring focus:ring-blue-200" required>
-                    @foreach ($users as $user)
-                        <option value="{{ $user->id }}">{{ $user->name }}</option>
-                    @endforeach
+                    <!-- Options will be populated through AJAX -->
                 </select>
             </div>
             <div class="flex justify-end mt-4">
-                <button type="submit" class="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600">Add </button>
+                <button type="button" class="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600" id="addStudentButton">Add</button>
             </div>
+            <button type="button" class="absolute text-gray-500 transform -translate-x-1/2 -translate-y-1/2 top-5 right-2 hover:text-gray-600 focus:outline-none" onclick="toggleModal('addStd2SubModal')">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
         </form>
-
-
     </div>
 </div>
+
+
 <div class="fixed inset-0 z-40 hidden bg-black opacity-25" id="addStd2SubModal-backdrop"></div>
 
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 <script type="text/javascript">
 
 
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Success message
-    const successMessage = document.getElementById('successMessage');
-    if (successMessage && !successMessage.classList.contains('hidden')) {
-        setTimeout(() => {
-            successMessage.classList.add('hidden');
-            console.log('Success message hidden');
-        }, 5000);
-    }
 
-    // Error message
-    const errorMessage = document.getElementById('errorMessage');
-    if (errorMessage && !errorMessage.classList.contains('hidden')) {
-        setTimeout(() => {
-            errorMessage.classList.add('hidden');
-            console.log('Error message hidden');
-        }, 5000);
-    }
-});
 
     function toggleModal(modalID, buttonElement) {
 
@@ -235,16 +203,13 @@ function fetchStudents(subjectId) {
         }
 
         var row = '<tr>' +
-                  '<td class="px-4 py-2 border">' + studentInfo + '</td>' +
-                  '<td class="px-4 py-2 border">' +
-                  '<form action="/update-mark/'+ StdId +'" method="POST">'+
-                  '@csrf'+
-                  '<input type="number" name="obtained_mark" value="' + mark + '" class="px-2 py-1 border rounded">' +
-                  '<input type="hidden" name="subject_id" value="' + subjectId + '" class="px-2 py-1 border rounded">' +
-                  '<button type="submit" class="px-2 py-1 ml-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none">Update</button></form>' +
-                  '</td>' +
-                  '<td class="px-4 py-2 border ' + markStyle + '">' + result + '</td>' +
-                  '</tr>';
+          '<td class="px-4 py-2 border">' + studentInfo + '</td>' +
+          '<td class="px-4 py-2 border">' +
+          '<input type="number" id="markInput_' + StdId + '" value="' + mark + '" class="px-2 py-1 border rounded">' +
+          '<button onclick="updateMark(' + StdId + ', ' + subjectId + ')" class="px-2 py-1 ml-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none">Update</button>' +
+          '</td>' +
+          '<td class="px-4 py-2 border ' + markStyle + '">' + result + '</td>' +
+          '</tr>';
 
         tbody.append(row);
     });
@@ -260,6 +225,269 @@ function fetchStudents(subjectId) {
     });
 }
 
+
+
+
+</script>
+
+
+<script>
+function fetchSubjects(pageUrl = '/subjects/fetch') {
+    $.ajax({
+        url: pageUrl,
+        type: 'GET',
+        success: function(response) {
+            var subjectsHtml = '';
+            response.subjects.forEach(function(subject) {
+                subjectsHtml += '<tr>' +
+                                '<td class="block p-2 text-center text-black bg-gray-200 border border-black md:table-cell">' + subject.name + '</td>' +
+                                // Add other subject properties here
+                                '<td class="block p-2 text-center text-black bg-gray-200 border border-black md:table-cell">' +
+                                '<button onclick="toggleModal(\'viewStudentsModal\', this)" data-id="' + subject.id + '" class="px-4 py-2 font-bold text-white bg-green-500 rounded hover:bg-green-700">View</button>' +
+                                '<button onclick="deleteSubject(' + subject.id + ')" class="px-4 py-2 ml-2 font-bold text-white bg-red-500 rounded hover:bg-red-700">Delete</button>' +
+                                '</td>' +
+                                '</tr>';
+            });
+            $('#subjectsTableBody').html(subjectsHtml);
+
+            var paginationHtml = '';
+            if (response.pagination.prev_page_url) {
+                paginationHtml += '<a href="#" onclick="fetchSubjects(\'' + response.pagination.prev_page_url + '\'); return false;">Previous</a>';
+            }
+            // Add more pagination logic here
+            if (response.pagination.next_page_url) {
+                paginationHtml += '<a href="#" onclick="fetchSubjects(\'' + response.pagination.next_page_url + '\'); return false;">Next</a>';
+            }
+            $('#paginationContainer').html(paginationHtml);
+        },
+        error: function() {
+            alert('Error fetching subjects');
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    fetchSubjects();
+});
+
+function deleteSubject(subjectId) {
+    if (confirm('Are you sure you want to delete this subject?')) {
+        $.ajax({
+            url: '/subjects/' + subjectId + '/delete',
+            type: 'POST',
+            data: {
+                _token: "{{ csrf_token() }}",
+                _method: 'DELETE'
+            },
+            success: function(response) {
+                $('#successContent').text(response.message);
+                $('#successMessage').removeClass('hidden');
+                setTimeout(function() {
+                    $('#successMessage').addClass('hidden');
+                }, 5000);
+                fetchSubjects();
+            },
+            error: function(xhr) {
+                var errors = xhr.responseJSON.errors;
+                $('#errorList').empty();
+                $.each(errors, function(key, value) {
+                    $('#errorList').append('<li>' + value + '</li>');
+                });
+                $('#errorMessage').removeClass('hidden');
+                setTimeout(function() {
+                    $('#errorMessage').addClass('hidden');
+                }, 5000);
+            }
+        });
+    }
+}
+
+function updateMark(studentId, subjectId) {
+    var mark = $('#markInput_' + studentId).val();
+
+    $.ajax({
+        url: '/update-mark/' + studentId,
+        type: 'POST',
+        data: {
+            _token: "{{ csrf_token() }}",
+            subject_id: subjectId,
+            obtained_mark: mark
+        },
+        success: function(response) {
+    $('#successContent').text(response.message);
+    $('#successMessage').removeClass('hidden');
+    toggleModal('viewStudentsModal');
+
+    setTimeout(function() {
+        $('#successMessage').addClass('hidden');
+    }, 5000);
+
+    fetchStudents(subjectId);
+},
+error: function(xhr) {
+    $('#errorMessage').removeClass('hidden');
+    toggleModal('viewStudentsModal');
+
+    setTimeout(function() {
+        $('#errorMessage').addClass('hidden');
+    }, 5000);
+
+
+    if (xhr.responseJSON && xhr.responseJSON.error) {
+
+        var errors = xhr.responseJSON.error;
+        var errorList = $('#errorList');
+
+        errorList.empty(); // Clear existing errors
+
+        // Loop through each error and add it to the error message div
+        $.each(errors, function(key, value) {
+            errorList.append('<li>' + value + '</li>');
+        });
+    }
+}
+
+    });
+}
+// Function to fetch and populate the list of students for a subject
+function fetchStudentsForSubject(subjectId) {
+    $.ajax({
+        url: '/students-for-subject/' + subjectId,
+        type: 'GET',
+        success: function (data) {
+            var studentsSelect = document.getElementById('student_id');
+            studentsSelect.innerHTML = '';
+
+            if (data.students.length === 0) {
+                // If there are no students for the subject, display a message
+                var option = document.createElement('option');
+                option.text = 'All students are registered in this subject';
+                option.disabled = true;
+                studentsSelect.appendChild(option);
+            } else {
+                data.students.forEach(function (student) {
+                    var option = document.createElement('option');
+                    option.value = student.id;
+                    option.text = student.name;
+                    studentsSelect.appendChild(option);
+                });
+            }
+        },
+        error: function () {
+            $('#errorMessage').text('Error fetching students');
+            $('#errorMessage').removeClass('hidden');
+        }
+    });
+}
+
+// Add an event listener to the subject select element
+document.getElementById('subject_id').addEventListener('change', function () {
+    var subjectId = this.value;
+    fetchStudentsForSubject(subjectId);
+});
+
+$(document).ready(function () {
+    $('#addStudentButton').click(function (e) {
+        e.preventDefault();
+        var formData = $('#addStudentForm').serialize();
+
+        $.ajax({
+            url: '{{ route('subjects.addStdToSub') }}',
+            type: 'POST',
+            data: formData,
+            success: function (response) {
+                toggleModal('addStd2SubModal');
+                $('#successContent').text(response.success);
+                $('#successMessage').removeClass('hidden');
+
+                setTimeout(function () {
+                    $('#successMessage').addClass('hidden');
+                }, 5000);
+
+                // After successfully adding a student, refetch the list of students for the subject
+                fetchStudentsForSubject($('#subject_id').val());
+            },
+            error: function (xhr) {
+                toggleModal('addStd2SubModal');
+                $('#errorMessage').removeClass('hidden');
+
+                // Check for validation errors
+                if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.errors) {
+                    var validationErrors = xhr.responseJSON.errors;
+                    var errorList = $('#errorList');
+
+                    errorList.empty(); // Clear existing errors
+
+                    // Loop through each validation error and add it to the error list
+                    $.each(validationErrors, function (key, messages) {
+                        messages.forEach(function (message) {
+                            errorList.append('<li>' + message + '</li>');
+                        });
+                    });
+                }
+                // Check for custom error (student already registered)
+                else if (xhr.status === 400 && xhr.responseJSON && xhr.responseJSON.error) {
+                    $('#errorMessage').text(xhr.responseJSON.error);
+                }
+
+                // Hide the error message after 5 seconds
+                setTimeout(function () {
+                    $('#errorMessage').addClass('hidden');
+                }, 5000);
+            }
+        });
+    });
+});
+
+
+
+$(document).ready(function () {
+    $('#addSubjectForm').submit(function (e) {
+        e.preventDefault();
+
+        var formData = $(this).serialize();
+
+        $.ajax({
+            url: '{{ route('subjects.store') }}',
+            type: 'POST',
+            data: formData,
+            success: function (response) {
+
+                toggleModal('addSubjectModal');
+                $('#successContent').text(response.message || 'Subject created successfully');
+                $('#successMessage').removeClass('hidden');
+                $('#addSubjectForm').trigger('reset');
+                fetchSubjects(pageUrl = '/subjects/fetch')
+                setTimeout(function() {
+                    $('#successMessage').addClass('hidden');
+                }, 5000);
+            },
+            error: function (xhr) {
+                toggleModal('addSubjectModal');
+                var errorList = $('#errorList');
+                errorList.empty();
+
+                if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.errors) {
+
+                    $.each(xhr.responseJSON.errors, function (key, messages) {
+                        messages.forEach(function (message) {
+                            errorList.append('<li>' + message + '</li>');
+                        });
+                    });
+                } else {
+
+                    errorList.append('<li>An error occurred. Please try again.</li>');
+                }
+                $('#addSubjectForm').trigger('reset');
+                $('#errorMessage').removeClass('hidden');
+
+                setTimeout(function() {
+                    $('#errorMessage').addClass('hidden');
+                }, 5000);
+            }
+        });
+    });
+});
 
 
 

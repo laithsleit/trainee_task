@@ -14,7 +14,7 @@ class SubjectSeeder extends Seeder
         // Create dummy subjects
         Subject::factory()->count(5)->create();
 
-        $userIds = [2, 3, 5, 4];
+        $userIds = [2, 3, 5, 4,6];
         $subjects = Subject::all();
 
         foreach ($subjects as $subject) {

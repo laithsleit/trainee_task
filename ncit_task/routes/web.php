@@ -45,9 +45,12 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
 
     Route::post('/subjects/store', [SubjectController::class, 'store'])->name('subjects.store');
     Route::get('/subjects/{subject}/students', [SubjectController::class, 'viewStudents'])->name('subjects.viewStudents');
-    Route::delete('/subjects/{subject}', [SubjectController::class, 'deleteSubject'])->name('subjects.delete');
+    Route::delete('/subjects/{subject}/delete', [SubjectController::class, 'deleteSubject'])->name('subjects.delete');
     Route::post('/subjects/AddStudents', [SubjectController::class, 'addStdToSub'])->name('subjects.addStdToSub');
     Route::post('/update-mark/{studentId}', [SubjectController::class,'updateMark'])->name('update.mark');
+    Route::get('/subjects/fetch', [SubjectController::class,'fetchSubjects'])->name('fetch.Subjects');
+    Route::get('/students-for-subject/{subjectId}', [SubjectController::class,'fetchStudentsForSubject'])->name('fetch.stdbasedon subject');
+
 
 });
 
