@@ -8,10 +8,18 @@ use App\Models\Subject;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class AdminController extends Controller
 {
+
+//     public function __construct()
+// {
+//     $this->middleware(['role:admin']);
+
+// }
+
 
     public function index() {
         $users = User::where('Role', 'user')->get();
@@ -32,12 +40,16 @@ class AdminController extends Controller
     }
 
     // Create the user
-    User::create([
+    $user =User::create([
         'name' => $request->name,
         'email' => $request->email,
         'password' => Hash::make($request->password),
     ]);
+    $role = Role::findByName('user');
+    $user->assignRole($role);
 
+    $permission = Permission::findByName('user-dash');
+    $user->givePermissionTo($permission);
     $successMessage = 'Student created successfully!';
 
     return redirect()->route('dashboard')->with('success', $successMessage);
@@ -93,6 +105,9 @@ protected function validator(array $data)
         'password.regex' => 'Your Password must be at least 8 characters long, include both letters and numbers, and contain special characters (!, $, #, %).',
     ]);
 }
+
+
+
 
 
 }

@@ -1,22 +1,22 @@
 @extends('admin.layouts.master')
 
 @section('body')
-    <h3 class="text-3xl font-medium text-gray-700">Dashboard</h3>
+    <h3 class="mb-2 text-3xl font-medium text-gray-700">Dashboard</h3>
 
 
 
     <!-- Check for validation errors and display them -->
 
-    <div id="errorMessage" class="relative hidden px-4 py-3 overflow-x-hidden overflow-y-auto text-red-700 bg-red-100 border border-red-400 rounded shadow-md" role="alert">
+    <div id="errorMessage" class="relative hidden px-4 py-3 mt-4 overflow-x-hidden overflow-y-auto text-red-700 bg-red-100 border border-red-400 rounded shadow-md" role="alert">
             <strong class="font-bold">Whoops! Something went wrong.</strong>
-            <ul id="errorList">
+            <ul id="errorList" class="mt-4">
 
             </ul>
         </div>
 
     <!-- Check for a success message -->
 
-    <div id="successMessage" class="relative hidden px-4 py-3 overflow-y-auto text-green-700 bg-green-100 border border-green-400 rounded shadow-md overflo w-x-hidden" role="alert">
+    <div id="successMessage" class="relative hidden px-4 py-3 mt-4 overflow-y-auto text-green-700 bg-green-100 border border-green-400 rounded shadow-md overflo w-x-hidden" role="alert">
             <strong class="font-bold">Success!</strong>
             <span id="successContent"></span>
         </div>

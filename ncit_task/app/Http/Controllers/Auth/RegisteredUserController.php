@@ -13,6 +13,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Auth\Events\Registered;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Validator;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class RegisteredUserController extends Controller
 {
@@ -45,6 +47,11 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+        $role = Role::findByName('user');
+        $user->assignRole($role);
+
+        $permission = Permission::findByName('user-dash');
+        $user->givePermissionTo($permission);
 
         return redirect()->route('login')->with('status', 'Registration successful. Please log in.');
     }

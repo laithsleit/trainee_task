@@ -12,6 +12,12 @@ use Illuminate\Support\Facades\Validator;
 
 class SubjectController extends Controller
 {
+
+    // public function __construct()
+    // {
+    //     $this->middleware('role:admin');
+
+    // }
     public function index()
 {
     $subjects = Subject::paginate(5);
